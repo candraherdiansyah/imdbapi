@@ -27,8 +27,8 @@ class FilmController extends Controller
             'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'url_video' => 'required|string',
             'id_kategori' => 'required|exists:kategoris,id',
-            'genre' => 'required',
-            'aktor' => 'required',
+            'genre' => 'required|array',
+            'aktor' => 'required|array',
         ]);
 
         if ($validator->fails()) {
@@ -149,12 +149,13 @@ class FilmController extends Controller
             Storage::delete($film->foto);
 
             $film->delete();
+            $film->aktor()->detach();
+            $film->genre()->detach();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Data deleted successfully',
-                'data' => null,
-            ], 204);
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
